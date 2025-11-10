@@ -1,0 +1,66 @@
+pipeline {
+    agent any
+
+    tools {
+        jdk 'JDK17'          // Configure this name under Jenkins -> Global Tool Configuration
+        maven 'Maven3'       // Same for Maven
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out source code...'
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Building the WaveMaker project...'
+                sh 'mvn clean install -DskipTests=false'
+            }
+        }
+
+        stage('Run Unit Tests') {
+            steps {
+                echo 'Running JUnit tests...'
+                sh 'mvn test'
+            }
+            post {
+                always {
+                    junit '**/target/surefire-reports/*.xml'
+                }
+            }
+        }
+
+        stage('Package') {
+            steps {
+                echo 'Packaging application...'
+                sh 'mvn package'
+            }
+            post {
+                success {
+                    archiveArtifacts artifacts: 'target/*.war', fingerprint: true
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying WAR to Tomcat or server...'
+                // Example placeholder for your deployment step:
+                // sh 'scp target/yourapp.war user@server:/opt/tomcat/webapps/'
+                sh 'echo "Deployment step goes here"'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Jenkins pipeline completed successfully!'
+        }
+        failure {
+            echo '❌ Jenkins pipeline failed!'
+        }
+    }
+}
