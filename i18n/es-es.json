@@ -1,0 +1,16 @@
+{
+  "messages" : {
+    "Hello_Msg" : "hola"
+  },
+  "formats" : {
+    "date" : "dd-MMM-yyyy",
+    "time" : "H:mm:ss",
+    "currency" : "USD"
+  },
+  "files" : {
+    "angular" : "es",
+    "fullCalendar" : null,
+    "moment" : "es"
+  },
+  "prefabMessages" : { }
+}

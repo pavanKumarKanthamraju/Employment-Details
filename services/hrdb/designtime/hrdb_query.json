@@ -1,0 +1,43 @@
+{
+  "userNameCount" : {
+    "name" : "userNameCount",
+    "description" : "Get the matching username count based on the input.",
+    "version" : "V2",
+    "queryString" : "SELECT COUNT(*) AS USERNAME_COUNT FROM EMPLOYEE WHERE USERNAME = :username",
+    "countQueryString" : "select count(*) from (SELECT COUNT(*) AS USERNAME_COUNT FROM EMPLOYEE WHERE USERNAME = :username) wmTempTable",
+    "offlineQueryString" : null,
+    "nativeSql" : true,
+    "fetchCount" : true,
+    "type" : "SELECT",
+    "parameters" : [ {
+      "name" : "username",
+      "type" : "string",
+      "list" : false,
+      "variableType" : "PROMPT",
+      "variableName" : "",
+      "testValue" : "eric.lin",
+      "required" : true
+    } ],
+    "request" : {
+      "wrapped" : false,
+      "typeRef" : null,
+      "method" : "GET"
+    },
+    "identifiers" : [ ],
+    "response" : {
+      "typeRef" : "com.employeemanagement.hrdb.models.query.UserNameCountResponse",
+      "returns" : "CUSTOM",
+      "responseType" : "SINGLE",
+      "properties" : [ {
+        "name" : "USERNAME_COUNT",
+        "fieldName" : "usernameCount",
+        "optional" : false,
+        "fieldType" : {
+          "type" : "PRIMITIVE",
+          "typeRef" : "java.math.BigInteger",
+          "list" : false
+        }
+      } ]
+    }
+  }
+}

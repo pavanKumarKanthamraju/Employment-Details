@@ -1,0 +1,13 @@
+<wm-partial name="header" type="header">
+    <wm-layoutgrid name="headerlayout">
+        <wm-gridrow name="headerrow">
+            <wm-gridcolumn name="headerleft" verticalalign="middle" columnwidth="9">
+                <wm-picture picturesource="resources/images/logos/logo.png" name="AppLogo" margin="unset unset unset 5px"></wm-picture>
+                <wm-label caption="EmployeeManagement" class="application-name" name="AppName" fontsize="20"></wm-label>
+            </wm-gridcolumn>
+            <wm-gridcolumn name="headerright" horizontalalign="right" verticalalign="middle" columnwidth="3" padding="1em 1em unset unset">
+                <wm-select class="select-locale pull-right" dataset="bind:Variables.supportedLocale.dataSet" on-change="App.changeLocale(newVal);App.reload();" placeholder="Select Language" name="select1" color="#4e4e4e" backgroundcolor="#e7e7e7"></wm-select>
+            </wm-gridcolumn>
+        </wm-gridrow>
+    </wm-layoutgrid>
+</wm-partial>

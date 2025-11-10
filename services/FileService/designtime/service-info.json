@@ -1,0 +1,7 @@
+{
+  "id" : "FileService",
+  "type" : "JavaService",
+  "packageNames" : [ "com.employeemanagement.fileservice" ],
+  "serviceClassNames" : [ "com.employeemanagement.fileservice.FileService" ],
+  "title" : "FileService"
+}

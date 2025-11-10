@@ -1,0 +1,7 @@
+{
+  "id" : "EmployeeCheck",
+  "type" : "JavaService",
+  "packageNames" : [ "com.employeemanagement.employeecheck" ],
+  "serviceClassNames" : [ "com.employeemanagement.employeecheck.EmployeeCheck" ],
+  "title" : "EmployeeCheck"
+}

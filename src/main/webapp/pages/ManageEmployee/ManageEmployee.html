@@ -1,0 +1,63 @@
+<wm-page pagetitle="Manage Employee" name="page1">
+    <wm-header content="header" name="header1"></wm-header>
+    <wm-top-nav content="topnav" name="top_nav1"></wm-top-nav>
+    <wm-content name="content1">
+        <wm-page-content columnwidth="12" name="page_content1">
+            <wm-liveform errormessage="" title="Add Employee" iconclass="wi wi-edit" defaultmode="Edit" dataset="bind:Variables.HrdbEmployeeData.dataSet" captionalign="left" captionposition="top" name="EmployeeLiveForm1" on-beforeservicecall="EmployeeLiveForm1Beforeservicecall($event, $operation, $data, options)"
+                on-success="Actions.goToPage_Main.invoke()">
+                <wm-layoutgrid columns="2" name="layoutgrid1">
+                    <wm-gridrow name="gridrow1">
+                        <wm-gridcolumn columnwidth="6" name="gridcolumn1">
+                            <wm-form-field name="firstname" displayname="Firstname" show="true" primary-key="false" generator="assigned" key="firstname" type="string" readonly="false" required="true" widget="text" maxchars="255" inputtype="text" placeholder="Enter value"
+                                validationmessage="Firstname is required"></wm-form-field>
+                        </wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="6" name="gridcolumn2">
+                            <wm-form-field name="lastname" displayname="Lastname" show="true" primary-key="false" generator="assigned" key="lastname" type="string" readonly="false" required="true" widget="text" maxchars="255" inputtype="text" placeholder="Enter value"
+                                validationmessage="Lastname is required"></wm-form-field>
+                        </wm-gridcolumn>
+                    </wm-gridrow>
+                    <wm-gridrow name="gridrow2">
+                        <wm-gridcolumn columnwidth="6" name="gridcolumn3">
+                            <wm-form-field name="username" displayname="Username" show="true" primary-key="false" generator="assigned" key="username" type="string" readonly="false" required="true" widget="text" maxchars="255" inputtype="text" placeholder="Enter value"
+                                validationmessage="Username is required"></wm-form-field>
+                        </wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="6" name="gridcolumn4">
+                            <wm-form-field name="birthdate" displayname="Birthdate" show="true" primary-key="false" generator="assigned" key="birthdate" type="date" readonly="false" required="true" widget="date" datepattern="MMM d, yyyy" placeholder="Select date"
+                                outputformat="yyyy-MM-dd" validationmessage="Birthdate is required"></wm-form-field>
+                        </wm-gridcolumn>
+                    </wm-gridrow>
+                    <wm-gridrow name="gridrow3">
+                        <wm-gridcolumn columnwidth="6" name="gridcolumn5">
+                            <wm-form-field name="password" displayname="Password" show="true" primary-key="false" generator="assigned" key="password" type="string" readonly="false" required="true" widget="text" maxchars="255" inputtype="password" placeholder="Enter value"
+                                validationmessage="Password must contain min. 8characters with atleast 1letter &amp; 1number" regexp="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"></wm-form-field>
+                        </wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="6" name="gridcolumn11">
+                            <wm-form-field name="confirmpassword" key="confirmpassword" displayname="Confirm Password" show="true" type="string" widget="password" inputtype="password" placeholder="Enter value" required="true"></wm-form-field>
+                        </wm-gridcolumn>
+                    </wm-gridrow>
+                    <wm-gridrow name="gridrow4">
+                        <wm-gridcolumn columnwidth="6" name="gridcolumn7">
+                            <wm-form-field name="jobTitle" displayname="Job Title" show="true" primary-key="false" generator="assigned" key="jobTitle" type="string" readonly="false" required="true" widget="select" maxchars="40" placeholder="Select value"
+                                validationmessage="Select a Job Title"></wm-form-field>
+                        </wm-gridcolumn>
+                        <wm-gridcolumn columnwidth="6" name="gridcolumn8">
+                            <wm-form-field name="city" displayname="City" show="true" primary-key="false" generator="assigned" key="city" type="string" readonly="false" required="true" widget="text" maxchars="255" inputtype="text" placeholder="Enter value"
+                                validationmessage="City is required"></wm-form-field>
+                        </wm-gridcolumn>
+                    </wm-gridrow>
+                    <wm-gridrow name="gridrow6">
+                        <wm-gridcolumn columnwidth="6" name="gridcolumn12">
+                            <wm-fileupload name="fileupload1" on-select="Variables.FileServiceUploadFile.invoke()" caption="Upload Pic" contenttype=".jpg"></wm-fileupload>
+                        </wm-gridcolumn>
+                    </wm-gridrow>
+                </wm-layoutgrid>
+                <wm-form-field name="empId" displayname="Emp Id" show="false" primary-key="true" generator="identity" key="empId" type="integer" readonly="true" required="true" step="0" widget="number" inputtype="number" placeholder="Enter value"></wm-form-field>
+                <wm-form-field name="picurl" displayname="Picurl" show="false" primary-key="false" generator="assigned" key="picurl" type="string" readonly="false" required="false" widget="text" maxchars="255" inputtype="text" placeholder="Enter value"></wm-form-field>
+                <wm-form-action key="cancel" display-name="Cancel" show="true" class="form-cancel btn-default" iconclass="wi wi-cancel" title="Cancel" action="cancel();Actions.goToPage_Main.invoke()" shortcutkey="" disabled="false" widget-type="button"
+                    type="button" update-mode="true"></wm-form-action>
+                <wm-form-action key="save" display-name="Save" show="true" class="form-save btn-success" iconclass="wi wi-save" title="Save" disabled="false" widget-type="button" type="submit" update-mode="true"></wm-form-action>
+            </wm-liveform>
+        </wm-page-content>
+    </wm-content>
+    <wm-footer content="footer" name="footer1"></wm-footer>
+</wm-page>
