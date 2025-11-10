@@ -4,16 +4,26 @@ pipeline {
    tools {
     jdk 'java17'
     maven 'maven3'
+    nodejs 'node18'
 }
 
 
     stages {
+        
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/pavanKumarKanthamraju/Employment-Details.git'
             }
         }
-
+  stage('Build UI') {
+            steps {
+                dir('frontend') { // adjust path if needed
+                    sh 'npm install'
+                    sh 'npm run build'
+                }
+            }
+        }
+    
         stage('Build') {
             steps {
                 sh 'mvn clean package -DskipTests'
