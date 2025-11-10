@@ -36,3 +36,5 @@ src/main/webapp/WEB-INF/data/*.properties
 src/main/webapp/extensions/components/node_modules/**
 src/main/webapp/design-tokens/temp-tokens
 src/main/webapp/design-tokens/app.override.css
+.DS_Store
+
