@@ -2,65 +2,42 @@ pipeline {
     agent any
 
     tools {
-        jdk 'JDK17'          // Configure this name under Jenkins -> Global Tool Configuration
-        maven 'Maven3'       // Same for Maven
+        jdk 'jdk17'           // Ensure you have JDK 17 configured in Jenkins
+        maven 'Maven3'        // Ensure Maven is configured in Jenkins tools
     }
 
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out source code...'
-                checkout scm
+                git branch: 'main', url: 'https://github.com/pavanKumarKanthamraju/Employment-Details.git'
             }
         }
 
         stage('Build') {
             steps {
-                echo 'Building the WaveMaker project...'
-                sh 'mvn clean install -DskipTests=false'
+                sh 'mvn clean package -DskipTests'
             }
         }
 
-        stage('Run Unit Tests') {
+        stage('Test') {
             steps {
-                echo 'Running JUnit tests...'
                 sh 'mvn test'
             }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                }
-            }
         }
 
-        stage('Package') {
+        stage('Archive') {
             steps {
-                echo 'Packaging application...'
-                sh 'mvn package'
-            }
-            post {
-                success {
-                    archiveArtifacts artifacts: 'target/*.war', fingerprint: true
-                }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo 'Deploying WAR to Tomcat or server...'
-                // Example placeholder for your deployment step:
-                // sh 'scp target/yourapp.war user@server:/opt/tomcat/webapps/'
-                sh 'echo "Deployment step goes here"'
+                archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
             }
         }
     }
 
     post {
         success {
-            echo '✅ Jenkins pipeline completed successfully!'
+            echo '✅ Build succeeded!'
         }
         failure {
-            echo '❌ Jenkins pipeline failed!'
+            echo '❌ Build failed!'
         }
     }
 }
