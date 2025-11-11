@@ -249,11 +249,11 @@ pipeline {
         //     }
         // }
 
-        stage('Archive WAR') {
-            steps {
-                archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
-            }
-        }
+        // stage('Archive WAR') {
+        //     steps {
+        //         archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
+        //     }
+        // }
     }
 
     post {
