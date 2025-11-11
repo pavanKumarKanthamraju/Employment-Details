@@ -34,7 +34,7 @@ pipeline {
             steps {
                 // Run Jest and generate coverage report
                 sh 'npm install --save-dev jest-html-reporter'
-                sh 'npm test -- --coverage'
+                sh 'npx jest'
             }
             post {
                 always {
