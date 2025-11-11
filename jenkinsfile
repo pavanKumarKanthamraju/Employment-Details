@@ -148,7 +148,7 @@
 // }
 
 pipeline {
-    agent any  // ✅ typo fixed ("an" → "any")
+    agent any
 
     tools {
         jdk 'java17'
@@ -180,16 +180,16 @@ pipeline {
         }
 
         stage('Install wm-unit-test-generator') {
-  steps {
-    sh 'npm install -g wm-unit-test-generator'
-  }
-}
+            steps {
+                // ⚠️ This will fail if your registry doesn't have this package
+                // You can remove this if using local `npm link` instead
+                sh 'npm install -g wm-unit-test-generator || true'
+            }
+        }
 
         stage('Link wm-unit-test-generator') {
             steps {
                 script {
-                    // ✅ Instead of trying to install from npm (which fails with 404)
-                    // link your locally built CLI
                     sh '''
                     echo "🔗 Linking local wm-unit-test-generator CLI..."
                     cd /Users/pavank_500328/wm-unit-test-generator
@@ -202,7 +202,6 @@ pipeline {
         stage('Run Unit Tests') {
             steps {
                 dir("${env.TEST_PATH}") {
-                    // ✅ Run your CLI test runner with coverage
                     sh '''
                     echo "🧪 Running unit tests via wm-ut-gen..."
                     wm-ut-gen run-tests --path=${TEST_PATH} --coverage || true
@@ -243,5 +242,6 @@ pipeline {
         }
     }
 }
+
 
 
