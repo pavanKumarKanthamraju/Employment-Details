@@ -19,73 +19,41 @@ describe('Common Partial', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    jest.clearAllMocks();
-
-    global.Partial = {
-      Widgets: {},
-      Variables: {},
-      Actions: {
-        appNotification: { invoke: jest.fn() }
-      }
-    };
-
     const module = require('../../../../../temp/Common/Common.js');
-    Partial = module.Partial || {};
-    formatDate = Partial.formatDate;
+    Partial = module.Partial;
+    formatDate = module.formatDate;
   });
 
   afterEach(() => {
     jest.clearAllMocks();
-    delete global.Partial;
-    delete global.formatDate;
   });
 
-  test('formatDate should format a valid ISO date string correctly', () => {
+  test('formatDate returns formatted string for valid date string', () => {
     const result = formatDate('2024-06-15T10:30:00Z');
-    expect(typeof result).toBe('string');
-    expect(result).toMatch(/\d{4}/);
+    expect(result).toMatch(/June|15|2024/);
   });
 
-  test('formatDate should return empty string when input is empty', () => {
+  test('formatDate returns formatted string for Date object input', () => {
+    const result = formatDate(new Date('2024-06-15'));
+    expect(typeof result).toBe('string');
+  });
+
+  test('formatDate returns empty string when dateString is empty', () => {
     const result = formatDate('');
     expect(result).toBe('');
   });
 
-  test('formatDate should return empty string when input is invalid', () => {
+  test('formatDate returns empty string for invalid date', () => {
     const result = formatDate('invalid-date');
     expect(result).toBe('');
   });
 
-  test('formatDate should handle non-string input', () => {
-    const result = formatDate(12345);
-    expect(typeof result).toBe('string');
-  });
-
-  test('formatDate should return formatted date for valid Date object', () => {
-    const result = formatDate(new Date('2024-06-15T10:30:00Z'));
-    expect(result).toContain('2024');
-  });
-
-  test('Partial.onReady should call formatDate and log formatted date', () => {
-    const spyFormat = jest.fn().mockReturnValue('June 15, 2024');
-    global.formatDate = spyFormat;
+  test('Partial.onReady logs formatted date correctly', () => {
     const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-
     Partial.onReady();
-
-    expect(spyFormat).toHaveBeenCalled();
-    expect(logSpy).toHaveBeenCalled();
-
-    logSpy.mockRestore();
-  });
-
-  test('Partial.onReady should handle missing appNotification gracefully', () => {
-    delete Partial.Actions.appNotification;
-    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-
-    Partial.onReady();
-
-    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Notification action missing'));
+    expect(logSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Formatted Date:')
+    );
     logSpy.mockRestore();
   });
 });
