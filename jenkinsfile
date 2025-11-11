@@ -1,53 +1,126 @@
+// pipeline {
+//     agent any
+
+//    tools {
+//     jdk 'java17'
+//     maven 'maven3'
+//     nodejs 'node25'
+// }
+
+
+//     stages {
+        
+//         stage('Checkout') {
+//             steps {
+//                 git branch: 'main', url: 'https://github.com/pavanKumarKanthamraju/Employment-Details.git'
+//             }
+//         }
+// //   stage('Build UI') {
+// //             steps {
+// //                 dir('frontend') { // adjust path if needed
+// //                     sh 'npm install'
+// //                     sh 'npm run build'
+// //                 }
+// //             }
+// //         }
+    
+//         stage('Build') {
+//             steps {
+//                 sh 'mvn clean package -DskipTests'
+//             }
+//         }
+
+//         stage('Run Jest Tests') {
+//             steps {
+//                 // Run Jest and generate coverage report
+//                 sh 'npm install --save-dev jest-html-reporter'
+//                 sh 'npx jest'
+//             }
+//             post {
+//                 always {
+//                     // Archive test results (optional, needs jest-junit setup)
+//                     junit '**/test-results.xml'
+                    
+//                     // Archive coverage (optional)
+//                     archiveArtifacts 'coverage/**/*'
+//                 }
+//             }
+//         }
+
+//         stage('Archive') {
+//             steps {
+//                 archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
+//             }
+//         }
+//     }
+
+//     post {
+//         success {
+//             echo '✅ Build succeeded!'
+//         }
+//         failure {
+//             echo '❌ Build failed!'
+//         }
+//     }
+// }
+
 pipeline {
     agent any
 
-   tools {
-    jdk 'java17'
-    maven 'maven3'
-    nodejs 'node25'
-}
-
+    tools {
+        jdk 'java17'
+        maven 'maven3'
+        nodejs 'node25'
+    }
 
     stages {
-        
+
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/pavanKumarKanthamraju/Employment-Details.git'
             }
         }
-//   stage('Build UI') {
-//             steps {
-//                 dir('frontend') { // adjust path if needed
-//                     sh 'npm install'
-//                     sh 'npm run build'
-//                 }
-//             }
-//         }
-    
+
         stage('Build') {
             steps {
                 sh 'mvn clean package -DskipTests'
             }
         }
 
+        stage('Install Frontend Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
         stage('Run Jest Tests') {
             steps {
-                // Run Jest and generate coverage report
-                sh 'npm install --save-dev jest-html-reporter'
-                sh 'npx jest'
+                // Install reporters (optional if already in package.json)
+                sh 'npm install --save-dev jest jest-junit jest-html-reporter'
+
+                // Run Jest with coverage and reporters
+                sh '''
+                npx jest --coverage \
+                --reporters=default \
+                --reporters=jest-junit \
+                --reporters=jest-html-reporter
+                '''
             }
             post {
                 always {
-                    // Archive test results (optional, needs jest-junit setup)
-                    junit '**/test-results.xml'
-                    
-                    // Archive coverage (optional)
-                    archiveArtifacts 'coverage/**/*'
+                    // Archive JUnit XML results
+                    junit 'junit.xml' // Ensure jest-junit outputs here
+
+                    // Archive HTML report
+                    archiveArtifacts artifacts: 'jest-html-report.html', fingerprint: true
+
+                    // Archive coverage report
+                    archiveArtifacts artifacts: 'coverage/**/*', fingerprint: true
                 }
             }
         }
 
-        stage('Archive') {
+        stage('Archive WAR') {
             steps {
                 archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
             }
@@ -63,3 +136,4 @@ pipeline {
         }
     }
 }
+
