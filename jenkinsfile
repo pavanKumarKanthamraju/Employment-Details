@@ -260,7 +260,25 @@ pipeline {
 }
 
 }
+stage('Check Coverage Drop') {
+            steps {
+                dir("${env.TEST_PATH}") {
+                    script {
+                        sh 'node compareCoverage.js'
+                    }
+                }
+            }
+        }
+    }
 
+    post {
+        failure {
+            echo '⚠️ Build failed due to coverage drop or test failure!'
+        }
+        success {
+            echo '✅ Build successful, coverage is stable!'
+        }
+    }
 
 
         // stage('Package Build') {
