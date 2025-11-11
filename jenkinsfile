@@ -240,14 +240,14 @@ pipeline {
             }
         }
 
-        stage('Package Build') {
-            steps {
-                sh '''
-                echo "🏗️ Packaging Maven project..."
-                mvn clean package -DskipTests
-                '''
-            }
-        }
+        // stage('Package Build') {
+        //     steps {
+        //         sh '''
+        //         echo "🏗️ Packaging Maven project..."
+        //         mvn clean package -DskipTests
+        //         '''
+        //     }
+        // }
 
         stage('Archive WAR') {
             steps {
