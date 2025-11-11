@@ -63,86 +63,159 @@
 //         }
 //     }
 // }
+// pipeline {
+//     agent any
+
+//     tools {
+//         jdk 'java17'
+//         maven 'maven3'
+//         nodejs 'node25'
+//     }
+
+//     stages {
+
+//         stage('Checkout') {
+//             steps {
+//                 git branch: 'main', url: 'https://github.com/pavanKumarKanthamraju/Employment-Details.git'
+//             }
+//         }
+
+//         stage('Build') {
+//             steps {
+//                 sh 'mvn clean package -DskipTests'
+//             }
+//         }
+
+//         stage('Install Frontend Dependencies') {
+//             steps {
+//                 sh 'npm install'
+//             }
+//         }
+
+//         stage('Run Jest Tests') {
+//             steps {
+//                 // Install reporters (optional if already in package.json)
+//                 sh 'npm install --save-dev jest jest-junit jest-html-reporter'
+
+//                 // Run Jest with coverage and reporters
+//                 sh '''
+//                 npx jest --coverage \
+//                 --reporters=default \
+//                 --reporters=jest-junit \
+//                 --reporters=jest-html-reporter
+//                 '''
+//             }
+//             post {
+//                 always {
+//                     // Create reports folder
+//                     sh '''
+//                     mkdir -p test-reports
+//                     cp -r coverage test-reports/ || true
+//                     cp jest-html-report.html test-reports/ || true
+//                     cp junit.xml test-reports/ || true
+//                     '''
+
+//                     // Zip all reports
+//                     sh 'zip -r test-reports.zip test-reports || true'
+
+//                     // Publish test results
+//                     junit 'junit.xml'
+
+//                     // Archive all artifacts including the zip
+//                     archiveArtifacts artifacts: 'test-reports.zip', fingerprint: true
+//                     archiveArtifacts artifacts: 'test-reports/**/*', fingerprint: true
+//                 }
+//             }
+//         }
+
+//         // Optional WAR packaging (if backend exists)
+//         // stage('Archive WAR') {
+//         //     steps {
+//         //         archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
+//         //     }
+//         // }
+//     }
+
+//     post {
+//         success {
+//             echo '✅ Build succeeded!'
+//             echo '📦 Download full test report from: Build → Artifacts → test-reports.zip'
+//         }
+//         failure {
+//             echo '❌ Build failed!'
+//         }
+//     }
+// }
+
 pipeline {
     agent any
-
     tools {
         jdk 'java17'
         maven 'maven3'
         nodejs 'node25'
     }
 
-    stages {
+    environment {
+        TEST_PATH = '/Users/pavank_500328/Downloads/EmployeeManagementDetails'
+    }
 
+    stages {
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/pavanKumarKanthamraju/Employment-Details.git'
             }
         }
 
-        stage('Build') {
+        stage('Install Dependencies') {
+            steps {
+                dir("${env.TEST_PATH}") {
+                    sh '''
+                    npm install
+                    npm install -g wm-unit-test-generator
+                    '''
+                }
+            }
+        }
+
+        stage('Run Unit Tests') {
+            steps {
+                dir("${env.TEST_PATH}") {
+                    // Run all tests with coverage and HTML report
+                    sh '''
+                    wm-ut-gen run-tests --path=${TEST_PATH} --coverage --report=html || true
+                    '''
+                }
+            }
+            post {
+                always {
+                    // Archive Jest coverage reports
+                    archiveArtifacts artifacts: '**/coverage/**/*', fingerprint: true
+
+                    // If Jest HTML report is generated
+                    archiveArtifacts artifacts: '**/jest-html-report.html', fingerprint: true
+                }
+            }
+        }
+
+        stage('Package Build') {
             steps {
                 sh 'mvn clean package -DskipTests'
             }
         }
 
-        stage('Install Frontend Dependencies') {
+        stage('Archive WAR') {
             steps {
-                sh 'npm install'
+                archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
             }
         }
-
-        stage('Run Jest Tests') {
-            steps {
-                // Install reporters (optional if already in package.json)
-                sh 'npm install --save-dev jest jest-junit jest-html-reporter'
-
-                // Run Jest with coverage and reporters
-                sh '''
-                npx jest --coverage \
-                --reporters=default \
-                --reporters=jest-junit \
-                --reporters=jest-html-reporter
-                '''
-            }
-            post {
-                always {
-                    // Create reports folder
-                    sh '''
-                    mkdir -p test-reports
-                    cp -r coverage test-reports/ || true
-                    cp jest-html-report.html test-reports/ || true
-                    cp junit.xml test-reports/ || true
-                    '''
-
-                    // Zip all reports
-                    sh 'zip -r test-reports.zip test-reports || true'
-
-                    // Publish test results
-                    junit 'junit.xml'
-
-                    // Archive all artifacts including the zip
-                    archiveArtifacts artifacts: 'test-reports.zip', fingerprint: true
-                    archiveArtifacts artifacts: 'test-reports/**/*', fingerprint: true
-                }
-            }
-        }
-
-        // Optional WAR packaging (if backend exists)
-        // stage('Archive WAR') {
-        //     steps {
-        //         archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
-        //     }
-        // }
     }
 
     post {
         success {
-            echo '✅ Build succeeded!'
-            echo '📦 Download full test report from: Build → Artifacts → test-reports.zip'
+            echo '✅ Build and Test Succeeded!'
         }
         failure {
-            echo '❌ Build failed!'
+            echo '❌ Build or Tests Failed!'
         }
     }
 }
