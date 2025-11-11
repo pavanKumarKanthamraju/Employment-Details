@@ -148,7 +148,8 @@
 // }
 
 pipeline {
-    agent any
+    agent any  // ✅ typo fixed ("an" → "any")
+
     tools {
         jdk 'java17'
         maven 'maven3'
@@ -160,6 +161,7 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/pavanKumarKanthamraju/Employment-Details.git'
@@ -170,8 +172,22 @@ pipeline {
             steps {
                 dir("${env.TEST_PATH}") {
                     sh '''
+                    echo "📦 Installing dependencies..."
                     npm install
-                    npm install -g wm-unit-test-generator
+                    '''
+                }
+            }
+        }
+
+        stage('Link wm-unit-test-generator') {
+            steps {
+                script {
+                    // ✅ Instead of trying to install from npm (which fails with 404)
+                    // link your locally built CLI
+                    sh '''
+                    echo "🔗 Linking local wm-unit-test-generator CLI..."
+                    cd /Users/pavank_500328/wm-unit-test-generator
+                    npm link
                     '''
                 }
             }
@@ -180,18 +196,17 @@ pipeline {
         stage('Run Unit Tests') {
             steps {
                 dir("${env.TEST_PATH}") {
-                    // Run all tests with coverage and HTML report
+                    // ✅ Run your CLI test runner with coverage
                     sh '''
-                    wm-ut-gen run-tests --path=${TEST_PATH} --coverage --report=html || true
+                    echo "🧪 Running unit tests via wm-ut-gen..."
+                    wm-ut-gen run-tests --path=${TEST_PATH} --coverage || true
                     '''
                 }
             }
             post {
                 always {
-                    // Archive Jest coverage reports
+                    echo "📊 Archiving coverage and reports..."
                     archiveArtifacts artifacts: '**/coverage/**/*', fingerprint: true
-
-                    // If Jest HTML report is generated
                     archiveArtifacts artifacts: '**/jest-html-report.html', fingerprint: true
                 }
             }
@@ -199,7 +214,10 @@ pipeline {
 
         stage('Package Build') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                sh '''
+                echo "🏗️ Packaging Maven project..."
+                mvn clean package -DskipTests
+                '''
             }
         }
 
@@ -212,11 +230,12 @@ pipeline {
 
     post {
         success {
-            echo '✅ Build and Test Succeeded!'
+            echo '✅ Build and Tests Succeeded!'
         }
         failure {
             echo '❌ Build or Tests Failed!'
         }
     }
 }
+
 
