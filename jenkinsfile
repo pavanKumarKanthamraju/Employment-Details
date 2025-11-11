@@ -200,45 +200,64 @@ pipeline {
         }
 
            stage('Run Unit Tests') {
-            steps {
-                dir("${env.TEST_PATH}") {
-                    sh '''
-                    echo "🧪 Running unit tests via wm-ut-gen..."
-                    wm-ut-gen run-tests --path=${TEST_PATH} || true
+    steps {
+        dir("${env.TEST_PATH}") {
+            sh '''
+            echo "🧪 Running unit tests via wm-ut-gen..."
+            wm-ut-gen run-tests --path=${TEST_PATH} || true
 
-                    echo "📄 Checking if Jest report exists..."
-                    REPORT_PATH=$(find . -name "jest-html-report.html" || true)
-                    if [ -z "$REPORT_PATH" ]; then
-                      echo "⚠️ No Jest HTML report found."
-                    else
-                      echo "✅ Found Jest report at: $REPORT_PATH"
-                    fi
-                    '''
-                }
-            }
-            post {
-                always {
-                    echo "📊 Archiving coverage and reports (if any)..."
-                    script {
-                        // Archive only if files exist
-                        def coverageExists = fileExists("${env.TEST_PATH}/coverage")
-                        def reportExists = fileExists("${env.TEST_PATH}/jest-html-report.html")
+            echo "✅ Checking for test report and coverage..."
+            if [ -f "utreports/index.html" ]; then
+              echo "✅ Found test report at utreports/index.html"
+            else
+              echo "⚠️ Test report not found in utreports/"
+            fi
 
-                        if (coverageExists) {
-                            archiveArtifacts artifacts: '**/coverage/**/*', fingerprint: true
-                        } else {
-                            echo "⚠️ No coverage folder found, skipping."
-                        }
-
-                        if (reportExists) {
-                            archiveArtifacts artifacts: '**/jest-html-report.html', fingerprint: true
-                        } else {
-                            echo "⚠️ No jest-html-report.html found, skipping."
-                        }
-                    }
-                }
-            }
+            if [ -d "coverage" ]; then
+              echo "✅ Found coverage folder."
+            else
+              echo "⚠️ No coverage folder found."
+            fi
+            '''
         }
+    }
+
+    post {
+        always {
+            echo "📊 Archiving test and coverage reports..."
+            script {
+                // Archive utreports HTML report
+                def reportExists = fileExists("${env.TEST_PATH}/utreports/index.html")
+                def coverageExists = fileExists("${env.TEST_PATH}/coverage")
+
+                if (reportExists) {
+                    archiveArtifacts artifacts: 'utreports/**/*', fingerprint: true
+                    echo "📦 ✅ Test report archived successfully."
+                } else {
+                    echo "⚠️ No test report found to archive."
+                }
+
+                if (coverageExists) {
+                    archiveArtifacts artifacts: 'coverage/**/*', fingerprint: true
+                    echo "📦 ✅ Coverage report archived successfully."
+                } else {
+                    echo "⚠️ No coverage folder found to archive."
+                }
+            }
+
+            // Optionally publish HTML directly to Jenkins UI
+            publishHTML(target: [
+                allowMissing: true,
+                keepAll: true,
+                alwaysLinkToLastBuild: true,
+                reportDir: "${env.TEST_PATH}/utreports",
+                reportFiles: 'index.html',
+                reportName: '🧪 Unit Test Report'
+            ])
+        }
+    }
+}
+
 
         // stage('Package Build') {
         //     steps {
