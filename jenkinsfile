@@ -199,20 +199,43 @@ pipeline {
             }
         }
 
-        stage('Run Unit Tests') {
+           stage('Run Unit Tests') {
             steps {
                 dir("${env.TEST_PATH}") {
                     sh '''
                     echo "🧪 Running unit tests via wm-ut-gen..."
-                    wm-ut-gen run-tests --path=${TEST_PATH} --coverage || true
+                    wm-ut-gen run-tests --path=${TEST_PATH} || true
+
+                    echo "📄 Checking if Jest report exists..."
+                    REPORT_PATH=$(find . -name "jest-html-report.html" || true)
+                    if [ -z "$REPORT_PATH" ]; then
+                      echo "⚠️ No Jest HTML report found."
+                    else
+                      echo "✅ Found Jest report at: $REPORT_PATH"
+                    fi
                     '''
                 }
             }
             post {
                 always {
-                    echo "📊 Archiving coverage and reports..."
-                    archiveArtifacts artifacts: '**/coverage/**/*', fingerprint: true
-                    archiveArtifacts artifacts: '**/jest-html-report.html', fingerprint: true
+                    echo "📊 Archiving coverage and reports (if any)..."
+                    script {
+                        // Archive only if files exist
+                        def coverageExists = fileExists("${env.TEST_PATH}/coverage")
+                        def reportExists = fileExists("${env.TEST_PATH}/jest-html-report.html")
+
+                        if (coverageExists) {
+                            archiveArtifacts artifacts: '**/coverage/**/*', fingerprint: true
+                        } else {
+                            echo "⚠️ No coverage folder found, skipping."
+                        }
+
+                        if (reportExists) {
+                            archiveArtifacts artifacts: '**/jest-html-report.html', fingerprint: true
+                        } else {
+                            echo "⚠️ No jest-html-report.html found, skipping."
+                        }
+                    }
                 }
             }
         }
