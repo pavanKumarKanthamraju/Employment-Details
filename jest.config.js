@@ -8,7 +8,7 @@ module.exports = {
   moduleFileExtensions: ['js'],
   collectCoverage: true,
   coverageDirectory: 'coverage',
-  coverageReporters: ['text', 'html', 'json-summary'],
+  coverageReporters: ['json-summary','text', 'html'],
   reporters: [
     'default',
     ['jest-html-reporter', {
