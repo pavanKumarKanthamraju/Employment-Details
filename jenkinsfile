@@ -15,14 +15,14 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/pavanKumarKanthamraju/Employment-Details.git'
             }
         }
-  stage('Build UI') {
-            steps {
-                dir('frontend') { // adjust path if needed
-                    sh 'npm install'
-                    sh 'npm run build'
-                }
-            }
-        }
+//   stage('Build UI') {
+//             steps {
+//                 dir('frontend') { // adjust path if needed
+//                     sh 'npm install'
+//                     sh 'npm run build'
+//                 }
+//             }
+//         }
     
         stage('Build') {
             steps {
@@ -30,9 +30,20 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Run Jest Tests') {
             steps {
-                sh 'mvn test'
+                // Run Jest and generate coverage report
+                sh 'npm install --save-dev jest-html-reporter'
+                sh 'npm test -- --coverage'
+            }
+            post {
+                always {
+                    // Archive test results (optional, needs jest-junit setup)
+                    junit '**/test-results.xml'
+                    
+                    // Archive coverage (optional)
+                    archiveArtifacts 'coverage/**/*'
+                }
             }
         }
 
