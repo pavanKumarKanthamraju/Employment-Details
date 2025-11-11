@@ -63,7 +63,6 @@
 //         }
 //     }
 // }
-
 pipeline {
     agent any
 
@@ -108,18 +107,28 @@ pipeline {
             }
             post {
                 always {
-                    // Archive JUnit XML results
-                    junit 'junit.xml' // Ensure jest-junit outputs here
+                    // Create reports folder
+                    sh '''
+                    mkdir -p test-reports
+                    cp -r coverage test-reports/ || true
+                    cp jest-html-report.html test-reports/ || true
+                    cp junit.xml test-reports/ || true
+                    '''
 
-                    // Archive HTML report
-                    archiveArtifacts artifacts: 'jest-html-report.html', fingerprint: true
+                    // Zip all reports
+                    sh 'zip -r test-reports.zip test-reports || true'
 
-                    // Archive coverage report
-                    archiveArtifacts artifacts: 'coverage/**/*', fingerprint: true
+                    // Publish test results
+                    junit 'junit.xml'
+
+                    // Archive all artifacts including the zip
+                    archiveArtifacts artifacts: 'test-reports.zip', fingerprint: true
+                    archiveArtifacts artifacts: 'test-reports/**/*', fingerprint: true
                 }
             }
         }
 
+        // Optional WAR packaging (if backend exists)
         // stage('Archive WAR') {
         //     steps {
         //         archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
@@ -130,6 +139,7 @@ pipeline {
     post {
         success {
             echo '✅ Build succeeded!'
+            echo '📦 Download full test report from: Build → Artifacts → test-reports.zip'
         }
         failure {
             echo '❌ Build failed!'
