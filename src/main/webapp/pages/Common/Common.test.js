@@ -21,7 +21,6 @@ describe('Common Partial', () => {
     jest.resetModules();
     jest.clearAllMocks();
 
-    // ✅ Define globals before requiring Common.js
     global.Partial = {
       Widgets: {},
       Variables: {},
@@ -30,17 +29,9 @@ describe('Common Partial', () => {
       }
     };
 
-    // ✅ Require the file AFTER defining globals
-    
     const module = require('../../../../../temp/Common/Common.js');
-    console.log('Module loaded:', module);
-
-    // ✅ Reference from global
     Partial = module.Partial || {};
-    Partial.Widgets = Partial.Widgets || {};
-    Partial.Variables = Partial.Variables || {};
-    Partial.Actions = Partial.Actions || { appNotification: { invoke: jest.fn() } };
-    formatDate = Partial.formatDate
+    formatDate = Partial.formatDate;
   });
 
   afterEach(() => {
@@ -52,7 +43,7 @@ describe('Common Partial', () => {
   test('formatDate should format a valid ISO date string correctly', () => {
     const result = formatDate('2024-06-15T10:30:00Z');
     expect(typeof result).toBe('string');
-    expect(result).toMatch(/\d{4}/); // contains a year
+    expect(result).toMatch(/\d{4}/);
   });
 
   test('formatDate should return empty string when input is empty', () => {
@@ -65,18 +56,37 @@ describe('Common Partial', () => {
     expect(result).toBe('');
   });
 
+  test('formatDate should handle non-string input', () => {
+    const result = formatDate(12345);
+    expect(typeof result).toBe('string');
+  });
+
+  test('formatDate should return formatted date for valid Date object', () => {
+    const result = formatDate(new Date('2024-06-15T10:30:00Z'));
+    expect(result).toContain('2024');
+  });
+
   test('Partial.onReady should call formatDate and log formatted date', () => {
     const spyFormat = jest.fn().mockReturnValue('June 15, 2024');
     global.formatDate = spyFormat;
-
     const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
 
     Partial.onReady();
 
-    // Assert the helper was called at least once
     expect(spyFormat).toHaveBeenCalled();
     expect(logSpy).toHaveBeenCalled();
 
     logSpy.mockRestore();
   });
+
+  test('Partial.onReady should handle missing appNotification gracefully', () => {
+    delete Partial.Actions.appNotification;
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    Partial.onReady();
+
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Notification action missing'));
+    logSpy.mockRestore();
+  });
 });
+
