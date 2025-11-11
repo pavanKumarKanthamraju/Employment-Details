@@ -223,39 +223,41 @@ pipeline {
     }
 
     post {
-        always {
-            echo "📊 Archiving test and coverage reports..."
+    always {
+        echo "📊 Archiving reports..."
+        dir("${env.TEST_PATH}") {
             script {
-                // Archive utreports HTML report
-                def reportExists = fileExists("${env.TEST_PATH}/utreports/index.html")
-                def coverageExists = fileExists("${env.TEST_PATH}/coverage")
+                def htmlReport = "utreports/index.html"
+                def coverageDir = "coverage"
 
-                if (reportExists) {
+                if (fileExists(htmlReport)) {
+                    echo "✅ Found test report at ${htmlReport}"
                     archiveArtifacts artifacts: 'utreports/**/*', fingerprint: true
-                    echo "📦 ✅ Test report archived successfully."
                 } else {
-                    echo "⚠️ No test report found to archive."
+                    echo "⚠️ No test report found in ${env.TEST_PATH}/utreports"
                 }
 
-                if (coverageExists) {
+                if (fileExists(coverageDir)) {
+                    echo "✅ Found coverage report directory"
                     archiveArtifacts artifacts: 'coverage/**/*', fingerprint: true
-                    echo "📦 ✅ Coverage report archived successfully."
                 } else {
-                    echo "⚠️ No coverage folder found to archive."
+                    echo "⚠️ No coverage folder found in ${env.TEST_PATH}"
                 }
-            }
 
-            // Optionally publish HTML directly to Jenkins UI
-            publishHTML(target: [
-                allowMissing: true,
-                keepAll: true,
-                alwaysLinkToLastBuild: true,
-                reportDir: "${env.TEST_PATH}/utreports",
-                reportFiles: 'index.html',
-                reportName: '🧪 Unit Test Report'
-            ])
+                // Add report to Jenkins UI
+                publishHTML(target: [
+                    allowMissing: true,
+                    keepAll: true,
+                    alwaysLinkToLastBuild: true,
+                    reportDir: 'utreports',
+                    reportFiles: 'index.html',
+                    reportName: '🧪 Unit Test Report'
+                ])
+            }
         }
     }
+}
+
 }
 
 
