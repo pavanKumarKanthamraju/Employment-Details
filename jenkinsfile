@@ -157,7 +157,8 @@ pipeline {
     }
 
     environment {
-        TEST_PATH = '/Users/pavank_500328/Downloads/EmployeeManagementDetails'
+        // TEST_PATH = '/Users/pavank_500328/Downloads/EmployeeManagementDetails'
+         TEST_PATH = "${WORKSPACE}"
     }
 
     stages {
