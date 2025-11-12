@@ -1,7 +1,12 @@
 const fs = require('fs');
 
-const currentPath = './utreports/coverage-summary.json';
-const previousPath = './previous-coverage.json'; // stored from last run
+// const currentPath = './utreports/coverage-summary.json';
+// const previousPath = './previous-coverage.json'; // stored from last run
+
+const path = require('path');
+
+const currentPath = path.resolve(__dirname, './utreports/coverage-summary.json');
+const previousPath = path.resolve(__dirname, './previous-coverage.json');
 
 if (!fs.existsSync(currentPath)) {
   console.error('❌ Current coverage file not found.');
