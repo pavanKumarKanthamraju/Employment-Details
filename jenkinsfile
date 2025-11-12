@@ -39,11 +39,11 @@ pipeline {
                 npm install --registry=https://registry.npmjs.org/ --save-dev jest-environment-jsdom jest-junit jest-html-reporter
             '''
 
-            sh '''
-wm-ut-gen generate --path=${WORKSPACE} --mode=manual
+           sh '''
+  echo "🧪 Generating test files in manual mode..."
+  yes 1 | wm-ut-gen generate --path=${WORKSPACE}
+'''
 
-
-            '''
                     sh '''
                         npm install --registry=https://registry.npmjs.org/ --save-dev jest-junit
                 chmod +x /Users/pavank_500328/.jenkins/tools/jenkins.plugins.nodejs.tools.NodeJSInstallation/node25/bin/wm-ut-gen
