@@ -15,6 +15,7 @@ let TestPartial;
 let formatDate;
 
 beforeEach(() => {
+  global.Partial = {};
   jest.resetModules();
   const module = require('./Common.js'); // adjust path if needed
 
