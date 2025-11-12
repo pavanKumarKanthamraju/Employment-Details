@@ -43,17 +43,9 @@ pipeline {
                     dir("${env.TEST_PATH}") {
                         script {
                             // Archive HTML report
-    //                         if (fileExists('utreports/index.html')) {
-    //                             archiveArtifacts artifacts: 'utreports/**/*', fingerprint: true
-    //                        publishHTML([
-    //   reportDir: 'utreports',
-    //   reportFiles: 'test-report.html',
-    //   reportName: '🧪 Jest Test Report',
-    //   allowMissing: false,
-    //   alwaysLinkToLastBuild: true,
-    //   keepAll: true
-    // ])
-    //                         }
+                            if (fileExists('utreports/index.html')) {
+                                archiveArtifacts artifacts: 'utreports/**/*', fingerprint: true
+                            }
 
                             // Archive coverage
                             if (fileExists('coverage')) {
