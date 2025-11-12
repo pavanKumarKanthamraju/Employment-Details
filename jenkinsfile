@@ -28,7 +28,16 @@ pipeline {
                 }
             }
         }
-
+    stage('Update CLI Tool') {
+            steps {
+                echo "🔄 Ensuring latest wm-ut-gen CLI version is used..."
+                sh '''
+                    npm uninstall -g wm-ut-gen || true
+                    npm install -g wm-ut-gen@latest --registry=https://registry.npmjs.org/
+                    wm-ut-gen --version
+                '''
+            }
+        }
         stage('Run Unit Tests') {
             steps {
                 dir("${env.TEST_PATH}") {
