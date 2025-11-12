@@ -33,7 +33,7 @@ afterAll(() => {
   console.log.mockRestore?.();
 });
 
-describe('Common Partial', () => {
+describe('Footer Page', () => {
   let Partial;
   let formatDate;
 

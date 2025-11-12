@@ -3,6 +3,11 @@
  * Provides describe blocks for each function and default Page mocks.
  */
 
+/**
+ * Auto-generated Manual Jest Test for Main.js
+ * Provides describe blocks for each function and default Page mocks.
+ */
+
 beforeAll(() => {
   jest.spyOn(console, 'log').mockImplementation(() => {}); // silence logs
 });
@@ -12,34 +17,38 @@ afterAll(() => {
 });
 
 describe('Main Page', () => {
-
-describe('yearOfBirth()', () => {
   let Page;
 
   beforeEach(() => {
     jest.resetModules();
-    const module = require('../../../../../temp/Main/Main.js');
-    Page = module.Page || {};
-    Page.Widgets = Page.Widgets || {};
-    Page.Variables = Page.Variables || {};
-    Page.Actions = Page.Actions || { appNotification: { invoke: jest.fn() } };
-    jest.clearAllMocks();
+    const module = require('../../../../../temp/Main/Main.js'); // adjust path
+    Page = module.Page;
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    jest.clearAllMocks();
   });
 
-  test('TODO: should behave correctly for yearOfBirth', () => {
-    // Arrange
-    // e.g., Page.Widgets.someInput.datavalue = 5;
+  describe('yearOfBirth', () => {
+    test('returns correct year for valid date', () => {
+      const dob = '1990-05-15';
+      const result = Page.yearOfBirth(dob);
+      expect(result).toBe(1990);
+    });
 
-    // Act
-    // e.g., Page.yearOfBirth();
+    test('returns NaN for invalid date', () => {
+      const result = Page.yearOfBirth('invalid-date');
+      expect(result).toBeNaN();
+    });
+  });
 
-    // Assert
-    // expect(...).toBe(...);
+  describe('onReady', () => {
+    test('logs "Main Page Ready"', () => {
+      const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+      Page.onReady();
+      expect(logSpy).toHaveBeenCalledWith("Main Page Ready");
+      logSpy.mockRestore();
+    });
   });
 });
 
-});
