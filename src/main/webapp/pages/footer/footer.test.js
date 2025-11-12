@@ -39,7 +39,7 @@ describe('Common Partial', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    const module = require('../../../../../temp/Common/Common.js');
+    const module = require('../../../../../temp/footer/footer.js');
     Partial = module.Partial;
     formatDate = module.formatDate;
   });
