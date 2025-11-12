@@ -17,7 +17,7 @@ describe('top Nav Page', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    const module = require('.topnav.js');
+    const module = require('./topnav.js');
     Partial = module.Partial;
     formatDate = module.formatDate;
   });
