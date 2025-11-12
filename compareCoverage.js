@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const currentPath = './coverage/coverage-summary.json';
+const currentPath = './utreports/coverage-summary.json';
 const previousPath = './previous-coverage.json'; // stored from last run
 
 if (!fs.existsSync(currentPath)) {
