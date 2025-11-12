@@ -23,32 +23,50 @@ describe('Main Page', () => {
     jest.resetModules();
     const module = require('../../../../../temp/Main/Main.js'); // adjust path
     Page = module.Page;
+
+    // Mock Widgets
+    Page.Widgets = {
+      headingLabel: { caption: '' },
+      topnav: { Widgets: { homeLink: { caption: '' } } },
+    };
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  describe('yearOfBirth', () => {
-    test('returns correct year for valid date', () => {
-      const dob = '1990-05-15';
-      const result = Page.yearOfBirth(dob);
-      expect(result).toBe(1990);
-    });
-
-    test('returns NaN for invalid date', () => {
-      const result = Page.yearOfBirth('invalid-date');
-      expect(result).toBeNaN();
-    });
+  test('onReady sets headingLabel caption', () => {
+    Page.onReady();
+    expect(Page.Widgets.headingLabel.caption).toBe('Employee Listing');
   });
 
-  describe('onReady', () => {
-    test('logs "Main Page Ready"', () => {
-      const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-      Page.onReady();
-      expect(logSpy).toHaveBeenCalledWith("Main Page Ready");
-      logSpy.mockRestore();
-    });
+  test('topnavLoad sets homeLink caption', () => {
+    const widget = {}; // not used in the function
+    Page.topnavLoad(null, widget);
+    expect(Page.Widgets.topnav.Widgets.homeLink.caption).toBe('Employees');
+  });
+
+  test('HrdbEmployeeDataonBeforeDatasetReady adds fullName to each employee', () => {
+    const data = [
+      { firstname: 'John', lastname: 'Doe' },
+      { firstname: 'Jane', lastname: 'Smith' },
+    ];
+    Page.HrdbEmployeeDataonBeforeDatasetReady(null, data);
+    expect(data[0].fullName).toBe('John Doe');
+    expect(data[1].fullName).toBe('Jane Smith');
+  });
+
+  test('calculateAge returns correct age', () => {
+    const dob = new Date();
+    dob.setFullYear(dob.getFullYear() - 25); // 25 years ago
+    const age = Page.calculateAge(dob.toISOString());
+    expect(age).toBe(25);
+  });
+
+  test('calculateAge returns NaN for invalid date', () => {
+    const age = Page.calculateAge('invalid-date');
+    expect(age).toBeNaN();
   });
 });
+
 
