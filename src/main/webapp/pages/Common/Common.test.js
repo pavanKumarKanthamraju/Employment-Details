@@ -17,10 +17,18 @@ let formatDate;
 beforeEach(() => {
   jest.resetModules();
   const module = require('./Common.js'); // adjust path if needed
+
   TestPartial = module.Partial || {};
-  TestPartial.Widgets = TestPartial.Widgets || {};
-  TestPartial.Variables = TestPartial.Variables || {};
-  TestPartial.Actions = TestPartial.Actions || { appNotification: { invoke: jest.fn() } };
+  // Mock Widgets/Variables fully to cover all lines in onReady
+  TestPartial.Widgets = {
+    someWidget: { datavalue: 'mock' }
+  };
+  TestPartial.Variables = {
+    loggedInUser: { getData: jest.fn() }
+  };
+  TestPartial.Actions = {
+    appNotification: { invoke: jest.fn() }
+  };
 
   formatDate = module.formatDate;
   jest.clearAllMocks();
@@ -31,38 +39,32 @@ afterEach(() => {
 });
 
 describe('formatDate()', () => {
-  test('should return formatted string for valid date string', () => {
-    const result = formatDate('2024-06-15T10:30:00Z');
-    expect(result).toMatch(/June|15|2024/);
+  test('returns formatted string for valid ISO string', () => {
+    expect(formatDate('2024-06-15T10:30:00Z')).toMatch(/June|15|2024/);
   });
 
-  test('should return formatted string for Date object', () => {
-    const result = formatDate(new Date('2024-06-15'));
-    expect(typeof result).toBe('string');
+  test('returns formatted string for Date object', () => {
+    expect(typeof formatDate(new Date('2024-06-15'))).toBe('string');
   });
 
-  test('should return empty string for empty input', () => {
-    const result = formatDate('');
-    expect(result).toBe('');
+  test('returns empty string for empty input', () => {
+    expect(formatDate('')).toBe('');
   });
 
-  test('should return empty string for invalid date', () => {
-    const result = formatDate('invalid-date');
-    expect(result).toBe('');
+  test('returns empty string for invalid date', () => {
+    expect(formatDate('invalid')).toBe('');
   });
 });
 
 describe('Partial.onReady()', () => {
-  test('should call console.log with formatted date', () => {
+  test('calls console.log with formatted date', () => {
     const logSpy = jest.spyOn(console, 'log');
     TestPartial.onReady();
-    expect(logSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Formatted Date:')
-    );
+    expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Formatted Date:'));
     logSpy.mockRestore();
   });
 
-  test('should not throw if Partial.Widgets or Variables are missing', () => {
+  test('does not throw if Widgets or Variables are missing', () => {
     delete TestPartial.Widgets;
     delete TestPartial.Variables;
     expect(() => TestPartial.onReady()).not.toThrow();
