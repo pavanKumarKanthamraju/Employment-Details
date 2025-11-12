@@ -111,8 +111,7 @@ pipeline {
     <p><b>Build Status:</b> ${buildStatus}</p>
     <p><b>Job:</b> ${env.JOB_NAME} #${env.BUILD_NUMBER}</p>
     <p><b>Jenkins URL:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
-    <p><b>🧪 Unit Test Report:</b> <a href="${env.BUILD_URL}HTML_20Report_20Unit_20Test_20Report/">View Report</a></p>
-    <p><b>📊 Coverage Report:</b> <a href="${env.BUILD_URL}/artifact/utreports/index.html">View Coverage</a></p>
+    <p><b>🧪 Unit Test Coverage Report:</b> <a href="${env.BUILD_URL}/artifact/utreports/index.html">View Report</a></p>
     <p><b>Coverage Status:</b> ${coverageStatus}</p>
     <br>
     <p>Thanks,<br>Jenkins</p>
