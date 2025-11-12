@@ -96,25 +96,26 @@ pipeline {
                 def coverageStatus = env.COVERAGE_DROP.toBoolean() ? "⚠️ Coverage Dropped!" : "✅ Coverage OK"
 
                 // Compose consolidated email
-                def emailBody = """\
-Hello Team,
-
-Build Status: ${buildStatus}
-Job: ${env.JOB_NAME} #${env.BUILD_NUMBER}
-URL: ${env.BUILD_URL}
-
-Unit Test Report: ${env.BUILD_URL}testReport
-Coverage Report: ${env.BUILD_URL}artifact/coverage/index.html
-Coverage Status: ${coverageStatus}
-
-Thanks,
-Jenkins
+                def emailBody =  """\
+<html>
+  <body style="font-family: Arial, sans-serif;">
+    <h3>🔔 Build Summary</h3>
+    <p><b>Build Status:</b> ${buildStatus}</p>
+    <p><b>Job:</b> ${env.JOB_NAME} #${env.BUILD_NUMBER}</p>
+    <p><b>Jenkins URL:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+    <p><b>🧪 Unit Test Report:</b> <a href="${env.BUILD_URL}HTML_20Report_20Unit_20Test_20Report/">View Report</a></p>
+    <p><b>📊 Coverage Report:</b> <a href="${env.BUILD_URL}artifact/coverage/index.html">View Coverage</a></p>
+    <p><b>Coverage Status:</b> ${coverageStatus}</p>
+    <br>
+    <p>Thanks,<br>Jenkins</p>
+  </body>
+</html>
 """
 
                 // Send consolidated email
                 emailext(
-                    to: "${env.RECIPIENTS}",
-                    subject: "Build ${env.JOB_NAME} #${env.BUILD_NUMBER} - ${buildStatus}",
+                   to: "${env.RECIPIENTS}",
+                subject: "Build ${env.JOB_NAME} #${env.BUILD_NUMBER} - ${buildStatus}",
                     body: emailBody,
                     mimeType: 'text/plain',
                     from: "ps-tools@wavemaker.com"
