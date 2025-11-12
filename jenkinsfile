@@ -28,16 +28,17 @@ pipeline {
                 }
             }
         }
-    stage('Update CLI Tool') {
-            steps {
-                echo "🔄 Ensuring latest wm-ut-gen CLI version is used..."
-                sh '''
-                    npm uninstall -g wm-ut-gen || true
-                    npm install -g wm-ut-gen@latest --registry=https://registry.npmjs.org/
-                    wm-ut-gen --version
-                '''
-            }
-        }
+stage('Update CLI Tool') {
+    steps {
+        echo "🔄 Linking local wm-ut-gen CLI..."
+        sh '''
+            cd /Users/pavank_500328/.jenkins/tools/wm-ut-gen
+            npm install
+            npm link
+        '''
+    }
+}
+
         stage('Run Unit Tests') {
             steps {
                 dir("${env.TEST_PATH}") {
