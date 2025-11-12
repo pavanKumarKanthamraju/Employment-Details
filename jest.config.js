@@ -11,7 +11,7 @@ module.exports = {
   coverageDirectory: 'coverage',
   coverageReporters: ['json-summary','text', 'html'],
   reporters: [
-    'default',
+   'default',
     ['jest-html-reporter', {
       pageTitle: 'Hybrid Test Report',
       outputPath: 'utreports/test-report.html',
