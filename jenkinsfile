@@ -1,152 +1,3 @@
-// pipeline {
-//     agent any
-
-//    tools {
-//     jdk 'java17'
-//     maven 'maven3'
-//     nodejs 'node25'
-// }
-
-
-//     stages {
-        
-//         stage('Checkout') {
-//             steps {
-//                 git branch: 'main', url: 'https://github.com/pavanKumarKanthamraju/Employment-Details.git'
-//             }
-//         }
-// //   stage('Build UI') {
-// //             steps {
-// //                 dir('frontend') { // adjust path if needed
-// //                     sh 'npm install'
-// //                     sh 'npm run build'
-// //                 }
-// //             }
-// //         }
-    
-//         stage('Build') {
-//             steps {
-//                 sh 'mvn clean package -DskipTests'
-//             }
-//         }
-
-//         stage('Run Jest Tests') {
-//             steps {
-//                 // Run Jest and generate coverage report
-//                 sh 'npm install --save-dev jest-html-reporter'
-//                 sh 'npx jest'
-//             }
-//             post {
-//                 always {
-//                     // Archive test results (optional, needs jest-junit setup)
-//                     junit '**/test-results.xml'
-                    
-//                     // Archive coverage (optional)
-//                     archiveArtifacts 'coverage/**/*'
-//                 }
-//             }
-//         }
-
-//         stage('Archive') {
-//             steps {
-//                 archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
-//             }
-//         }
-//     }
-
-//     post {
-//         success {
-//             echo '✅ Build succeeded!'
-//         }
-//         failure {
-//             echo '❌ Build failed!'
-//         }
-//     }
-// }
-// pipeline {
-//     agent any
-
-//     tools {
-//         jdk 'java17'
-//         maven 'maven3'
-//         nodejs 'node25'
-//     }
-
-//     stages {
-
-//         stage('Checkout') {
-//             steps {
-//                 git branch: 'main', url: 'https://github.com/pavanKumarKanthamraju/Employment-Details.git'
-//             }
-//         }
-
-//         stage('Build') {
-//             steps {
-//                 sh 'mvn clean package -DskipTests'
-//             }
-//         }
-
-//         stage('Install Frontend Dependencies') {
-//             steps {
-//                 sh 'npm install'
-//             }
-//         }
-
-//         stage('Run Jest Tests') {
-//             steps {
-//                 // Install reporters (optional if already in package.json)
-//                 sh 'npm install --save-dev jest jest-junit jest-html-reporter'
-
-//                 // Run Jest with coverage and reporters
-//                 sh '''
-//                 npx jest --coverage \
-//                 --reporters=default \
-//                 --reporters=jest-junit \
-//                 --reporters=jest-html-reporter
-//                 '''
-//             }
-//             post {
-//                 always {
-//                     // Create reports folder
-//                     sh '''
-//                     mkdir -p test-reports
-//                     cp -r coverage test-reports/ || true
-//                     cp jest-html-report.html test-reports/ || true
-//                     cp junit.xml test-reports/ || true
-//                     '''
-
-//                     // Zip all reports
-//                     sh 'zip -r test-reports.zip test-reports || true'
-
-//                     // Publish test results
-//                     junit 'junit.xml'
-
-//                     // Archive all artifacts including the zip
-//                     archiveArtifacts artifacts: 'test-reports.zip', fingerprint: true
-//                     archiveArtifacts artifacts: 'test-reports/**/*', fingerprint: true
-//                 }
-//             }
-//         }
-
-//         // Optional WAR packaging (if backend exists)
-//         // stage('Archive WAR') {
-//         //     steps {
-//         //         archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
-//         //     }
-//         // }
-//     }
-
-//     post {
-//         success {
-//             echo '✅ Build succeeded!'
-//             echo '📦 Download full test report from: Build → Artifacts → test-reports.zip'
-//         }
-//         failure {
-//             echo '❌ Build failed!'
-//         }
-//     }
-// }
-
 pipeline {
     agent any
 
@@ -157,12 +8,12 @@ pipeline {
     }
 
     environment {
-        // TEST_PATH = '/Users/pavank_500328/Downloads/EmployeeManagementDetails'
-         TEST_PATH = "${WORKSPACE}"
+        TEST_PATH = "${WORKSPACE}"
+        RECIPIENTS = 'pavan.kumar@wavemaker.com'
+        COVERAGE_DROP = false
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/pavanKumarKanthamraju/Employment-Details.git'
@@ -172,145 +23,110 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 dir("${env.TEST_PATH}") {
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('Run Unit Tests') {
+            steps {
+                dir("${env.TEST_PATH}") {
                     sh '''
-                    echo "📦 Installing dependencies..."
-                    npm install
+                        npm install --registry=https://registry.npmjs.org/ --save-dev jest-junit
+                        wm-ut-gen run-tests --path=${TEST_PATH} || true
                     '''
                 }
             }
-        }
 
-        stage('Install wm-unit-test-generator') {
-            steps {
-                // ⚠️ This will fail if your registry doesn't have this package
-                // You can remove this if using local `npm link` instead
-                sh 'npm install -g wm-unit-test-generator || true'
-            }
-        }
+            post {
+                always {
+                    dir("${env.TEST_PATH}") {
+                        script {
+                            // Archive HTML report
+                            if (fileExists('utreports/index.html')) {
+                                archiveArtifacts artifacts: 'utreports/**/*', fingerprint: true
+                                publishHTML(target: [
+                                    allowMissing: true,
+                                    keepAll: true,
+                                    alwaysLinkToLastBuild: true,
+                                    reportDir: 'utreports',
+                                    reportFiles: 'index.html',
+                                    reportName: '🧪 Unit Test Report'
+                                ])
+                            }
 
-        stage('Link wm-unit-test-generator') {
-            steps {
-                script {
-                    sh '''
-                    echo "🔗 Linking local wm-unit-test-generator CLI..."
-                    cd /Users/pavank_500328/Downloads/llm-test-gen
-                    npm link
-                    '''
-                }
-            }
-        }
+                            // Archive coverage
+                            if (fileExists('coverage')) {
+                                archiveArtifacts artifacts: 'coverage/**/*', fingerprint: true
+                            }
 
-           stage('Run Unit Tests') {
-    steps {
-        dir("${env.TEST_PATH}") {
-            sh '''
-            echo "🧪 Running unit tests via wm-ut-gen..."
-            npm install --registry=https://registry.npmjs.org/ --save-dev jest-junit
-            wm-ut-gen run-tests --path=${TEST_PATH} || true
-
-            echo "✅ Checking for test report and coverage..."
-            if [ -f "utreports/index.html" ]; then
-              echo "✅ Found test report at utreports/index.html"
-            else
-              echo "⚠️ Test report not found in utreports/"
-            fi
-
-            if [ -d "coverage" ]; then
-              echo "✅ Found coverage folder."
-            else
-              echo "⚠️ No coverage folder found."
-            fi
-            '''
-        }
-    }
-
-    post {
-    always {
-        echo "📊 Archiving reports..."
-        dir("${env.TEST_PATH}") {
-            script {
-                def htmlReport = "utreports/index.html"
-                def coverageDir = "coverage"
-
-                
-
-                if (fileExists(htmlReport)) {
-                    echo "✅ Found test report at ${htmlReport}"
-                    archiveArtifacts artifacts: 'utreports/**/*', fingerprint: true
-                } else {
-                    echo "⚠️ No test report found in ${env.TEST_PATH}/utreports"
-                }
-
-                if (fileExists(coverageDir)) {
-                    echo "✅ Found coverage report directory"
-                    archiveArtifacts artifacts: 'coverage/**/*', fingerprint: true
-                } else {
-                    echo "⚠️ No coverage folder found in ${env.TEST_PATH}"
-                }
-
-                // Add report to Jenkins UI
-                publishHTML(target: [
-                    allowMissing: true,
-                    keepAll: true,
-                    alwaysLinkToLastBuild: true,
-                    reportDir: 'utreports',
-                    reportFiles: 'index.html',
-                    reportName: '🧪 Unit Test Report'
-                ])
-
-                // Publish JUnit XML to Jenkins test results
-                    if (fileExists('utreports/junit.xml')) {
-                        junit 'utreports/junit.xml'
+                            // Publish JUnit results
+                            if (fileExists('utreports/junit.xml')) {
+                                junit 'utreports/junit.xml'
+                            }
+                        }
                     }
+                }
+            }
+        }
+
+        stage('Check Coverage Drop') {
+            steps {
+                dir("${env.TEST_PATH}") {
+                    script {
+                        // Run your coverage comparison script
+                        def status = sh(script: 'node compareCoverage.js', returnStatus: true)
+                        if (status != 0) {
+                            env.COVERAGE_DROP = true
+                            echo "❌ Coverage drop detected!"
+                        } else {
+                            echo "✅ Coverage check passed."
+                        }
+                    }
+                }
             }
         }
     }
-}
 
-}
-stage('Check Coverage Drop') {
-    steps {
-        dir("${env.TEST_PATH}") {
-            sh 'node compareCoverage.js'
-        }
-    }
     post {
-        failure {
-            emailext(
-                to: 'pavan.kumar@wavemaker.com',
-                subject: "Build ${env.JOB_NAME} #${env.BUILD_NUMBER} - Coverage Dropped",
-                body: """\
+        always {
+            script {
+                // Determine final build status
+                def buildStatus = currentBuild.currentResult
+                def coverageStatus = env.COVERAGE_DROP.toBoolean() ? "⚠️ Coverage Dropped!" : "✅ Coverage OK"
+
+                // Compose consolidated email
+                def emailBody = """\
 Hello Team,
 
-Code coverage has dropped in this build: ${env.BUILD_URL}
+Build Status: ${buildStatus}
+Job: ${env.JOB_NAME} #${env.BUILD_NUMBER}
+URL: ${env.BUILD_URL}
 
-Please check Jenkins for details.
+Unit Test Report: ${env.BUILD_URL}testReport
+Coverage Report: ${env.BUILD_URL}artifact/coverage/index.html
+Coverage Status: ${coverageStatus}
 
 Thanks,
 Jenkins
-""",
-                mimeType: 'text/plain'  // ensures plain text email
-            )
-            echo "❌ Coverage drop detected in this stage!"
-        }
-        success {
-            echo "✅ Coverage check passed, no drop."
-        }
-    }
-}
+"""
 
-    
-    }
+                // Send consolidated email
+                emailext(
+                    to: "${env.RECIPIENTS}",
+                    subject: "Build ${env.JOB_NAME} #${env.BUILD_NUMBER} - ${buildStatus}",
+                    body: emailBody,
+                    mimeType: 'text/plain'
+                )
+            }
+        }
 
-    post {
         success {
             echo '✅ Build and Tests Succeeded!'
         }
+
         failure {
             echo '❌ Build or Tests Failed!'
         }
     }
 }
-
-
-
