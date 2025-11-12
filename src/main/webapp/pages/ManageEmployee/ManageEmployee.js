@@ -55,17 +55,21 @@ function confirmPasswordEval(field, form) {
     }
 }
 
-Page.checkUsername = function (field, form) {
+function checkUsername(field, form) {
     return new Promise((resolve, reject) => {
-      if (!field.value) return resolve();
+      if (!field.value) {
+        resolve();
+        return;
+      }
   
-      Page.Variables.svUsernameCount.invoke({ input: field.value }, (data) => {
+      Page.Variables.svUsernameCount.invoke({}, (data) => {
         if (data.usernameCount > 0) {
-          reject({ errorMessage: "The username is already in use." });
+          reject({ errorMessage: 'The username is already in use.' });
         } else {
           resolve();
         }
       });
     });
-  };
+  }
+  
   
