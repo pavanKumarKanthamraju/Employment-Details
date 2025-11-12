@@ -268,7 +268,8 @@ pipeline {
 }
 
 }
-stage('Check Coverage Drop') {
+stages {
+        stage('Check Coverage Drop') {
             steps {
                 dir("${env.TEST_PATH}") {
                     script {
@@ -277,25 +278,16 @@ stage('Check Coverage Drop') {
                 }
             }
         }
+    }
+
+    post {
+        failure {
+            mail to: 'pavan.kumar@wavemaker.com',
+                 subject: "Build ${env.JOB_NAME} #${env.BUILD_NUMBER} - Coverage Dropped",
+                 body: "Code coverage has dropped in this build. Please check Jenkins for details."
+        }
+    }
     
-
-    
-
-
-        // stage('Package Build') {
-        //     steps {
-        //         sh '''
-        //         echo "🏗️ Packaging Maven project..."
-        //         mvn clean package -DskipTests
-        //         '''
-        //     }
-        // }
-
-        // stage('Archive WAR') {
-        //     steps {
-        //         archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
-        //     }
-        // }
     }
 
     post {
