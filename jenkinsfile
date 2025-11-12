@@ -116,7 +116,7 @@ Jenkins
                     to: "${env.RECIPIENTS}",
                     subject: "Build ${env.JOB_NAME} #${env.BUILD_NUMBER} - ${buildStatus}",
                     body: emailBody,
-                    mimeType: 'text/plain'
+                    mimeType: 'text/plain',
                     from: "ps-tools@wavemaker.com"
                 )
             }
