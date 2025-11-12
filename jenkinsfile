@@ -268,8 +268,7 @@ pipeline {
 }
 
 }
-stages {
-        stage('Check Coverage Drop') {
+stage('Check Coverage Drop') {
             steps {
                 dir("${env.TEST_PATH}") {
                     script {
@@ -278,13 +277,15 @@ stages {
                 }
             }
         }
-    }
-
-    post {
+        post {
         failure {
             mail to: 'pavan.kumar@wavemaker.com',
                  subject: "Build ${env.JOB_NAME} #${env.BUILD_NUMBER} - Coverage Dropped",
                  body: "Code coverage has dropped in this build. Please check Jenkins for details."
+            echo "❌ Coverage drop detected in this stage!"
+        }
+        success {
+            echo "✅ Coverage check passed, no drop."
         }
     }
     
