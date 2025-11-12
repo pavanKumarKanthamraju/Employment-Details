@@ -32,6 +32,12 @@ pipeline {
         stage('Run Unit Tests') {
             steps {
                 dir("${env.TEST_PATH}") {
+
+                       // Ensure Jest environment package exists (for jsdom)
+            sh '''
+                echo "📦 Installing Jest dependencies..."
+                npm install --registry=https://registry.npmjs.org/ --save-dev jest-environment-jsdom jest-junit jest-html-reporter
+            '''
                     sh '''
                         npm install --registry=https://registry.npmjs.org/ --save-dev jest-junit
                 chmod +x /Users/pavank_500328/.jenkins/tools/jenkins.plugins.nodejs.tools.NodeJSInstallation/node25/bin/wm-ut-gen
