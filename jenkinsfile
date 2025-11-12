@@ -40,7 +40,8 @@ pipeline {
             '''
 
             sh '''
-wm-ut-gen generate --path=${TEST_PATH}
+wm-ut-gen generate --path=${WORKSPACE} --mode=manual
+
 
             '''
                     sh '''
