@@ -205,6 +205,7 @@ pipeline {
         dir("${env.TEST_PATH}") {
             sh '''
             echo "🧪 Running unit tests via wm-ut-gen..."
+            npm install --save-dev jest-junit 
             wm-ut-gen run-tests --path=${TEST_PATH} || true
 
             echo "✅ Checking for test report and coverage..."
@@ -254,6 +255,11 @@ pipeline {
                     reportFiles: 'index.html',
                     reportName: '🧪 Unit Test Report'
                 ])
+
+                // Publish JUnit XML to Jenkins test results
+                    if (fileExists('utreports/junit.xml')) {
+                        junit 'utreports/junit.xml'
+                    }
             }
         }
     }

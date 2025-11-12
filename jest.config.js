@@ -17,6 +17,10 @@ module.exports = {
       includeFailureMsg: true,
       includeConsoleLog: true,
       theme: 'lightTheme'
+    }],
+    ['jest-junit', {
+      outputDirectory: 'test-reports',
+      outputName: 'junit.xml'
     }]
   ]
 };
