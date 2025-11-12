@@ -28,16 +28,22 @@ pipeline {
                 }
             }
         }
-stage('Update CLI Tool') {
+stage('Generate Unit Tests') {
     steps {
-        echo "🔄 Linking local wm-ut-gen CLI..."
+        echo "🧠 Running local CLI from Downloads folder..."
         sh '''
-            cd /Users/pavank_500328/.jenkins/tools/wm-ut-gen
-            npm install
-            npm link
+            set -e
+            echo "📦 Installing CLI dependencies..."
+            cd /Users/pavank_500328/Downloads/llm-test-gen
+            npm install --registry=https://registry.npmjs.org/
+
+            echo "🧪 Generating unit test files using local CLI..."
+            node ./bin/cli.js generate --path=${TEST_PATH}
         '''
     }
 }
+
+
 
         stage('Run Unit Tests') {
             steps {
