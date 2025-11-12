@@ -274,11 +274,23 @@ stage('Check Coverage Drop') {
             sh 'node compareCoverage.js'
         }
     }
-    post {   // ✅ Move post inside the stage
+    post {
         failure {
-            mail to: 'pavan.kumar@wavemaker.com',
-                 subject: "Build ${env.JOB_NAME} #${env.BUILD_NUMBER} - Coverage Dropped",
-                 body: "Code coverage has dropped in this build. Please check Jenkins for details."
+            emailext(
+                to: 'pavan.kumar@wavemaker.com',
+                subject: "Build ${env.JOB_NAME} #${env.BUILD_NUMBER} - Coverage Dropped",
+                body: """\
+Hello Team,
+
+Code coverage has dropped in this build: ${env.BUILD_URL}
+
+Please check Jenkins for details.
+
+Thanks,
+Jenkins
+""",
+                mimeType: 'text/plain'  // ensures plain text email
+            )
             echo "❌ Coverage drop detected in this stage!"
         }
         success {
@@ -286,6 +298,7 @@ stage('Check Coverage Drop') {
         }
     }
 }
+
     
     }
 
