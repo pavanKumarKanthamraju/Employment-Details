@@ -13,7 +13,6 @@ afterAll(() => {
 
 let TestPartial;
 let formatDate;
-let formatedDate;
 
 beforeEach(() => {
   jest.resetModules();
@@ -23,10 +22,7 @@ beforeEach(() => {
   TestPartial.Variables = TestPartial.Variables || {};
   TestPartial.Actions = TestPartial.Actions || { appNotification: { invoke: jest.fn() } };
 
-  // export functions directly if available
-  formatDate = module.formatDate || (() => '');
-  formatedDate = module.formatedDate || (() => '');
-
+  formatDate = module.formatDate;
   jest.clearAllMocks();
 });
 
@@ -34,28 +30,41 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-describe('formatedDate()', () => {
-  test('TODO: should behave correctly for formatedDate', () => {
-    // Arrange
-    const inputDate = '2024-06-15T10:30:00Z';
+describe('formatDate()', () => {
+  test('should return formatted string for valid date string', () => {
+    const result = formatDate('2024-06-15T10:30:00Z');
+    expect(result).toMatch(/June|15|2024/);
+  });
 
-    // Act
-    const result = formatedDate(inputDate);
+  test('should return formatted string for Date object', () => {
+    const result = formatDate(new Date('2024-06-15'));
+    expect(typeof result).toBe('string');
+  });
 
-    // Assert
-    expect(result).toEqual(expect.any(String));
+  test('should return empty string for empty input', () => {
+    const result = formatDate('');
+    expect(result).toBe('');
+  });
+
+  test('should return empty string for invalid date', () => {
+    const result = formatDate('invalid-date');
+    expect(result).toBe('');
   });
 });
 
-describe('formatDate()', () => {
-  test('TODO: should behave correctly for formatDate', () => {
-    // Arrange
-    const inputDate = '2024-06-15T10:30:00Z';
+describe('Partial.onReady()', () => {
+  test('should call console.log with formatted date', () => {
+    const logSpy = jest.spyOn(console, 'log');
+    TestPartial.onReady();
+    expect(logSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Formatted Date:')
+    );
+    logSpy.mockRestore();
+  });
 
-    // Act
-    const result = formatDate(inputDate);
-
-    // Assert
-    expect(result).toEqual(expect.any(String));
+  test('should not throw if Partial.Widgets or Variables are missing', () => {
+    delete TestPartial.Widgets;
+    delete TestPartial.Variables;
+    expect(() => TestPartial.onReady()).not.toThrow();
   });
 });
