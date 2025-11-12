@@ -13,7 +13,7 @@ module.exports = {
     'default',
     ['jest-html-reporter', {
       pageTitle: 'Hybrid Test Report',
-      outputPath: 'reports/test-report.html',
+      outputPath: 'utreports/test-report.html',
       includeFailureMsg: true,
       includeConsoleLog: true,
       theme: 'lightTheme'
