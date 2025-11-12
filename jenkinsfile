@@ -269,15 +269,12 @@ pipeline {
 
 }
 stage('Check Coverage Drop') {
-            steps {
-                dir("${env.TEST_PATH}") {
-                    script {
-                        sh 'node compareCoverage.js'
-                    }
-                }
-            }
+    steps {
+        dir("${env.TEST_PATH}") {
+            sh 'node compareCoverage.js'
         }
-        post {
+    }
+    post {   // ✅ Move post inside the stage
         failure {
             mail to: 'pavan.kumar@wavemaker.com',
                  subject: "Build ${env.JOB_NAME} #${env.BUILD_NUMBER} - Coverage Dropped",
@@ -288,6 +285,7 @@ stage('Check Coverage Drop') {
             echo "✅ Coverage check passed, no drop."
         }
     }
+}
     
     }
 
