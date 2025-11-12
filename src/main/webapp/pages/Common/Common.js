@@ -18,10 +18,10 @@ Partial.onReady = function () {
      console.log('Formatted Date:', formatedDate);
 };
 
-function formatDate(dateString) {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return '';
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return date.toLocaleDateString(undefined, options);
-}
+// function formatDate(dateString) {
+//     if (!dateString) return '';
+//     const date = new Date(dateString);
+//     if (isNaN(date.getTime())) return '';
+//     const options = { year: 'numeric', month: 'long', day: 'numeric' };
+//     return date.toLocaleDateString(undefined, options);
+// }
