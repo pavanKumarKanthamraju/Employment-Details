@@ -17,7 +17,7 @@ describe('Login Page', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    const module = require('../../../../../temp/Login/Login.js');
+    const module = require('./Login.js');
     Page = module.Page;
     formatDate = module.formatDate;
   });

@@ -39,7 +39,7 @@ describe('Footer Page', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    const module = require('../../../../../temp/footer/footer.js');
+    const module = require('./footer.js');
     Partial = module.Partial;
     formatDate = module.formatDate;
   });

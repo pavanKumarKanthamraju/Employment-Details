@@ -35,7 +35,7 @@ describe('ManageEmployee Page', () => {
       })),
     };
 
-    const module = require('../../../../../temp/ManageEmployee/ManageEmployee.js'); // adjust path
+    const module = require('./ManageEmployee.js'); // adjust path
     Page = module.Page;
     confirmPasswordEval = module.confirmPasswordEval;
     checkUsername = module.checkUsername;

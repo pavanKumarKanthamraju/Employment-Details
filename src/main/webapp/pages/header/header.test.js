@@ -17,7 +17,7 @@ describe('Common Partial', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    const module = require('../../../../../temp/header/header.js');
+    const module = require('./header.js');
     Partial = module.Partial;
     formatDate = module.formatDate;
   });

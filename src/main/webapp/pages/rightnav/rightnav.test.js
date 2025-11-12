@@ -17,7 +17,7 @@ describe('Right Nav Page', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    const module = require('../../../../../temp/rightnav/rightnav.js');
+    const module = require('./rightnav.js');
     Partial = module.Partial;
     formatDate = module.formatDate;
   });

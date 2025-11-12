@@ -21,7 +21,7 @@ describe('Main Page', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    const module = require('../../../../../temp/Main/Main.js'); // adjust path
+    const module = require('./Main.js'); // adjust path
     Page = module.Page;
 
     // Mock Widgets
