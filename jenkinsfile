@@ -36,7 +36,7 @@ pipeline {
                        // Ensure Jest environment package exists (for jsdom)
             sh '''
                 echo "📦 Installing Jest dependencies..."
-                npm install --registry=https://registry.npmjs.org/ --save-dev jest-environment-jsdom jest-junit jest-html-reporter acorn
+                npm install --registry=https://registry.npmjs.org/ --save-dev jest-environment-jsdom jest-junit jest-html-reporter acorn acorn-walk
             '''
 
            sh '''
