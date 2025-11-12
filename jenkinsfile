@@ -28,37 +28,30 @@ pipeline {
                 }
             }
         }
-stage('Generate Unit Tests') {
+ stage('Generate Unit Tests') {
     steps {
+        // Ensure Jest environment package exists (for jsdom)
+        sh '''
+                echo "📦 Installing Jest dependencies..."
+                npm install --registry=https://registry.npmjs.org/ --save-dev jest-environment-jsdom jest-junit jest-html-reporter acorn acorn-walk
+            '''
         echo "🧠 Running local CLI from Downloads folder..."
         sh '''
             set -e
-            echo "📦 Installing CLI dependencies..."
             cd /Users/pavank_500328/Downloads/llm-test-gen
             npm install --registry=https://registry.npmjs.org/
-
-            echo "🧪 Generating unit test files using local CLI..."
-            node ./bin/cli.js generate --path=${TEST_PATH}
+            echo "🧪 Generating test files in manual mode..."
+            yes 1 | node ./bin/cli.js generate --path=${TEST_PATH}
         '''
     }
 }
-
-
 
         stage('Run Unit Tests') {
             steps {
                 dir("${env.TEST_PATH}") {
 
-                       // Ensure Jest environment package exists (for jsdom)
-            sh '''
-                echo "📦 Installing Jest dependencies..."
-                npm install --registry=https://registry.npmjs.org/ --save-dev jest-environment-jsdom jest-junit jest-html-reporter acorn acorn-walk
-            '''
-
-           sh '''
-  echo "🧪 Generating test files in manual mode..."
-  yes 1 | wm-ut-gen generate --path=${WORKSPACE}
-'''
+                       
+   
 
                     sh '''
                         npm install --registry=https://registry.npmjs.org/ --save-dev jest-junit
