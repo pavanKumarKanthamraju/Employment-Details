@@ -19,7 +19,7 @@ module.exports = {
       theme: 'lightTheme'
     }],
     ['jest-junit', {
-      outputDirectory: 'test-reports',
+      outputDirectory: 'utreports',
       outputName: 'junit.xml'
     }]
   ]
