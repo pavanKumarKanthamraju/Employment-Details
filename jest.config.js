@@ -1,8 +1,9 @@
 
 module.exports = {
   verbose: true,
-  testEnvironment: 'jsdom',
   testEnvironment:'node',
+  testEnvironment: 'jsdom',
+
   testMatch: ['<rootDir>src/main/webapp/pages/**/*.test.js'],
   collectCoverageFrom: ["temp/**/*.js"],
   moduleFileExtensions: ['js'],
