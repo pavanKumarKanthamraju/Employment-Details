@@ -40,8 +40,7 @@ pipeline {
             set -e
             cd /Users/pavank_500328/Downloads/llm-test-gen
             npm install --registry=https://registry.npmjs.org/
-            echo "🧹 Cleaning old test files..."
-    find ${TEST_PATH} -type f -name "*.test.js" -delete
+
             echo "🧪 Generating test files in manual mode..."
             yes 1 | node /Users/pavank_500328/Downloads/llm-test-gen/bin/cli.js generate --path=${TEST_PATH}
         '''
