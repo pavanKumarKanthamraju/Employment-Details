@@ -55,24 +55,17 @@ function confirmPasswordEval(field, form) {
     }
 }
 
-function checkUsername(field, form) {
-    if (field.value) {
-        return new Promise(function(resolve, reject) {
-            var userNameCount = Page.Variables.svUsernameCount.invoke({
-                    "inputFields": {
-                        "username": field.value
-                    }
-                },
-                function(data) {
-                    if (data.usernameCount > 0) {
-                        reject({
-                            errorMessage: "The username is already in use."
-                        });
-                    }
-                    resolve();
-                });
-
-        });
-
-    }
-}
+Page.checkUsername = function (field, form) {
+    return new Promise((resolve, reject) => {
+      if (!field.value) return resolve();
+  
+      Page.Variables.svUsernameCount.invoke({ input: field.value }, (data) => {
+        if (data.usernameCount > 0) {
+          reject({ errorMessage: "The username is already in use." });
+        } else {
+          resolve();
+        }
+      });
+    });
+  };
+  
