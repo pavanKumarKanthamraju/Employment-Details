@@ -57,7 +57,7 @@ pipeline {
 
                     sh '''
                         npm install --registry=https://registry.npmjs.org/ --save-dev jest-junit
-                chmod +x /Users/pavank_500328/.jenkins/tools/jenkins.plugins.nodejs.tools.NodeJSInstallation/node25/bin/wm-ut-gen
+                chmod +x /Users/pavank_500328/.jenkins/tools/jenkins.plugins.nodejs.tools.NodeJSInstallation/node20/bin/wm-ut-gen
                 wm-ut-gen run-tests --path=${TEST_PATH} || true
                     '''
                 }
