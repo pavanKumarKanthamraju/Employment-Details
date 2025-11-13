@@ -15,7 +15,7 @@ Page.onReady = function () {
      * 'Page.Widgets.username.datavalue'
      */
     const formatedDate = formatDate('2025-06-15T10:30:00Z');
-    console.log('Formatted Date:', formatedDate);
+    console.log(`Formatted Date: ${formatedDate}`);
 };
 
 function formatDate(dateString) {
