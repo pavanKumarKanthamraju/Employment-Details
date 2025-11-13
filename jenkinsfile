@@ -57,7 +57,7 @@ pipeline {
                     sh '''
                         npm install --registry=https://registry.npmjs.org/ --save-dev jest-junit
                echo "🧪 Running tests using local CLI..."
-node /Users/pavank_500328/Downloads/llm-test-gen/bin/cli.js run-tests --path=${TEST_PATH} || true
+yes 1 | node /Users/pavank_500328/Downloads/llm-test-gen/bin/cli.js run-tests --path=${TEST_PATH} || true
 
                     '''
                 }
